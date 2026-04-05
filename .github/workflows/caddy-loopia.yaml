@@ -1,0 +1,46 @@
+---
+name: Build and Push Images
+on:
+  push:
+    branches: [main]
+
+env:
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  CADDY_VERSION: 2.11.2
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
+
+jobs:
+  build:
+    name: Build and push image
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Caddy
+        id: build-caddy
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE_REGISTRY }}/caddy-loopia
+          tags: latest git-${{ github.sha }} ${{ env.CADDY_VERSION }}
+          build-args: |
+            VERSION=${{ env.CADDY_VERSION }}
+          context: caddy-loopia
+          containerfiles: |
+            caddy-loopia/Containerfile
+
+      - name: Push To GHCR
+        id: push-caddy
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-caddy.outputs.image }}
+          tags: ${{ steps.build-caddy.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          extra-args: |
+            --disable-content-trust
+
+      - name: Print Image URL
+        run: echo "Pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
