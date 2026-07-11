@@ -3,11 +3,13 @@ ARG VERSION
 FROM docker.io/library/caddy:${VERSION:+${VERSION}-}builder AS builder
 
 ARG CADDY_DNS_LOOPIA_VERSION=de51b59f30711ad4dd2ddb1ec3c7bbe68b020646
+ARG TRANSFORM_ENCODER_VERSION=ba4124974830222da7f12a091cf11ddf4d49363f
 
 RUN --mount=type=cache,target=/go/pkg/mod                                      \
     --mount=type=cache,target=/root/.cache/go-build                            \
     xcaddy build                                                               \
-    --with github.com/caddy-dns/loopia@${CADDY_DNS_LOOPIA_VERSION}
+    --with github.com/caddy-dns/loopia@${CADDY_DNS_LOOPIA_VERSION}             \
+    --with github.com/caddyserver/transform-encoder@${TRANSFORM_ENCODER_VERSION}
 
 FROM docker.io/library/caddy:${VERSION:-latest}
 
