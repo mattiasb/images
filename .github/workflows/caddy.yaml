@@ -22,9 +22,9 @@ jobs:
         id: build-caddy
         uses: redhat-actions/buildah-build@v2
         with:
-          image: caddy-loopia
-          context: caddy-loopia
-          containerfiles: caddy-loopia/Containerfile
+          image: caddy
+          context: caddy
+          containerfiles: caddy/Containerfile
           build-args: VERSION=${{ env.CADDY_VERSION }}
           tags: latest git-${{ github.sha }} ${{ env.CADDY_VERSION }}
 
