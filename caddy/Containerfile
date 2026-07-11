@@ -2,7 +2,9 @@ ARG VERSION
 
 FROM docker.io/library/caddy:${VERSION:+${VERSION}-}builder AS builder
 
-RUN xcaddy build --with github.com/caddy-dns/loopia
+RUN --mount=type=cache,target=/go/pkg/mod                                      \
+    --mount=type=cache,target=/root/.cache/go-build                            \
+    xcaddy build --with github.com/caddy-dns/loopia
 
 FROM docker.io/library/caddy:${VERSION:-latest}
 
