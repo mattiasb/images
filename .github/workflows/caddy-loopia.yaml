@@ -23,15 +23,10 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: caddy-loopia
-          tags: >
-            latest
-            git-${{ github.sha }}
-            ${{ env.CADDY_VERSION }}
-          build-args: |
-            VERSION=${{ env.CADDY_VERSION }}
           context: caddy-loopia
-          containerfiles: |
-            caddy-loopia/Containerfile
+          containerfiles: caddy-loopia/Containerfile
+          build-args: VERSION=${{ env.CADDY_VERSION }}
+          tags: latest git-${{ github.sha }} ${{ env.CADDY_VERSION }}
 
       - name: Push To GHCR
         id: push-caddy
@@ -42,8 +37,7 @@ jobs:
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
-          extra-args: |
-            --disable-content-trust
+          extra-args: --disable-content-trust
 
       - name: Print Image URL
         run: echo "Pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
