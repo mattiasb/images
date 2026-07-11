@@ -2,7 +2,7 @@ ARG VERSION
 
 FROM docker.io/library/caddy:${VERSION:+${VERSION}-}builder AS builder
 
-RUN echo xcaddy build --with github.com/caddy-dns/loopia > /usr/bin/caddy
+RUN xcaddy build --with github.com/caddy-dns/loopia
 
 FROM docker.io/library/caddy:${VERSION:-latest}
 
