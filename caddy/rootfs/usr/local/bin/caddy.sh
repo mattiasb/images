@@ -2,6 +2,11 @@
 
 set -eu
 
+case "${1:-}" in
+    ''|-*) set -- run "${@}"                                                  ;;
+    *)                                                                        ;;
+esac
+
 case "${1}" in
     reload|run|start|stop|validate)
         set -- "${@}"                                                          \
