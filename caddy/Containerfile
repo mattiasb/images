@@ -1,3 +1,5 @@
+#!/bin/env -S podman build -t localhost/caddy:latest -f
+
 ARG VERSION
 
 FROM docker.io/library/caddy:${VERSION:+${VERSION}-}builder AS builder
