@@ -24,6 +24,8 @@ COPY rootfs/ /
 VOLUME /data
 VOLUME /config
 
+ENV CADDYSH_LOG_JQ=0
+
 CMD [  "/usr/local/bin/caddy.sh"       \
      , "run"                           \
      , "--config=/etc/caddy/Caddyfile" \
