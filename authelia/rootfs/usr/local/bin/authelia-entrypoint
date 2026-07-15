@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+if [ -n "${X_AUTHELIA_UMASK}" ]; then
+  umask "${X_AUTHELIA_UMASK}"
+fi
+
+exec "${@}"

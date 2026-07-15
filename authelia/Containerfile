@@ -1,0 +1,31 @@
+#!/bin/env -S podman build -t localhost/authelia:latest -f
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+FROM docker.io/library/debian:12.15-slim
+
+ARG VERSION=latest
+
+ENV X_AUTHELIA_CONFIG="/etc/authelia/configuration.yml"
+ENV X_AUTHELIA_LOG_JQ=0
+
+RUN <<EOF
+  set -eu
+
+  apt-get update
+  apt-get install -y --no-install-recommends jq
+
+  rm -rf /var/lib/apt/lists/*
+EOF
+
+COPY --from=docker.io/authelia/authelia:${VERSION:-latest} \
+     /app/authelia /usr/local/bin/
+COPY rootfs/ /
+
+EXPOSE 9091
+
+ENTRYPOINT ["authelia-entrypoint"]
+CMD ["authelia-run"]
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=1m CMD authelia-health
