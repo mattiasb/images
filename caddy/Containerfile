@@ -20,6 +20,10 @@ RUN apk add jq
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 COPY rootfs/ /
 
+# See https://caddy.community/t/caddy-docker-container-in-read-only-mode/11717/4
+VOLUME /data
+VOLUME /config
+
 CMD [  "/usr/local/bin/caddy.sh"       \
      , "run"                           \
      , "--config=/etc/caddy/Caddyfile" \
