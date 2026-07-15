@@ -15,4 +15,12 @@ RUN --mount=type=cache,target=/go/pkg/mod                                      \
 
 FROM docker.io/library/caddy:${VERSION:-latest}
 
+RUN apk add jq
+
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+COPY rootfs/ /
+
+CMD [  "/usr/local/bin/caddy.sh"       \
+     , "run"                           \
+     , "--config=/etc/caddy/Caddyfile" \
+     , "--adapter=caddyfile"           ]
