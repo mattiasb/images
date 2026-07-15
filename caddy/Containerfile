@@ -25,8 +25,7 @@ VOLUME /data
 VOLUME /config
 
 ENV CADDYSH_LOG_JQ=0
+ENV CADDYSH_CONFIG=/etc/caddy/Caddyfile
+ENV CADDYSH_CONFIG_ADAPTER=caddyfile
 
-CMD [  "/usr/local/bin/caddy.sh"       \
-     , "run"                           \
-     , "--config=/etc/caddy/Caddyfile" \
-     , "--adapter=caddyfile"           ]
+CMD [ "/usr/local/bin/caddy.sh" ]
