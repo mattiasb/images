@@ -10,12 +10,12 @@ esac
 case "${1}" in
     reload|run|start|stop|validate)
         set -- "${@}"                                                          \
-            ${CADDYSH_CONFIG:+--config="${CADDYSH_CONFIG}"}                    \
-            ${CADDYSH_CONFIG_ADAPTER:+--adapter="${CADDYSH_CONFIG_ADAPTER}"}  ;;
+            ${X_CADDY_CONFIG:+--config="${X_CADDY_CONFIG}"}                    \
+            ${X_CADDY_CONFIG_ADAPTER:+--adapter="${X_CADDY_CONFIG_ADAPTER}"}  ;;
     *) ;;
 esac
 
-if [ -z "${CADDYSH_LOG_JQ:-}" ] || [ "${CADDYSH_LOG_JQ:-}" = "0" ]; then
+if [ -z "${X_CADDY_LOG_JQ:-}" ] || [ "${X_CADDY_LOG_JQ:-}" = "0" ]; then
     exec /usr/bin/caddy "${@}"
 fi
 
