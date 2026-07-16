@@ -16,7 +16,7 @@ else
 fi
 
 # Even when we set log.format=json the first two lines will *still* be logfmt.
-LOGFMT_RX='time=".+?" level=([a-z]+) msg="(.+?)"'
+LOGFMT_RX='^time="[^"]+" level=([a-z]+) msg="([^"]+)".*$'
 
 exec authelia 2>&1                                                             \
     | sed -r 's|'"${LOGFMT_RX}"'|{"level":"\1","msg":"\2"}|'                   \
