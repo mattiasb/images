@@ -3,25 +3,28 @@
 # Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-only
 
-FROM docker.io/library/debian:12.15-slim
+FROM docker.io/library/alpine:3.23.5 as build
 
-ARG VERSION=latest
+ARG VERSION=4.39.20
+ARG FILE=authelia-v${VERSION}-linux-amd64-musl.tar.gz
+
+RUN --mount=source=do-install,target=/usr/local/bin/do-install <<EOF
+    set -eu
+
+    do-install pk curl
+    do-install gh authelia/authelia v${VERSION} ${FILE} authelia
+EOF
+
+FROM docker.io/library/alpine:3.23.5
 
 ENV X_AUTHELIA_CONFIG="/etc/authelia/configuration.yml"
 ENV X_AUTHELIA_LOG_JQ=0
 
-RUN <<EOF
-  set -eu
+RUN --mount=source=do-install,target=/usr/local/bin/do-install do-install pk jq
 
-  apt-get update
-  apt-get install -y --no-install-recommends jq
-
-  rm -rf /var/lib/apt/lists/*
-EOF
-
-COPY --from=docker.io/authelia/authelia:${VERSION:-latest} \
-     /app/authelia /usr/local/bin/
 COPY rootfs/ /
+
+COPY --from=build /usr/local/bin/* /usr/local/bin/
 
 EXPOSE 9091
 

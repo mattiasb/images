@@ -1,0 +1,97 @@
+#!/bin/ash
+
+# Lots of dynamic dispatch
+# shellcheck disable=SC2329
+
+set -eu
+
+################################################################################
+## Helpers
+
+error () {
+    echo "ERROR: ${*}" >&2
+}
+
+fail () {
+    error "${*}"
+    exit 1
+}
+
+task () {
+    printf "%-72s" "${1}"
+    shift
+
+    if ! out="$("${@}" 2>&1)"; then
+        echo " [ × ]"
+        echo
+        echo "ERROR: ${out}" >&2
+        exit 1
+    fi
+
+    echo " [ ✓ ]"
+}
+
+################################################################################
+## APK
+
+cmd_pk () {
+    if [ "${#}" -lt 1 ]; then
+        error "ERROR: Missing arguments."
+        echo
+        echo "Usage: $(basename "${0}") pk [PKG]..."
+        exit 2
+    fi
+
+    for pkg in "${@}"; do
+        task "Installing ${pkg}" apk add "${pkg}"
+    done
+}
+
+################################################################################
+## GitHub
+
+gh_install () {
+    url="${1}"
+    shift
+
+    curl -sSfL "${url}" | tar -C /usr/local/bin -zxv "${@}"
+}
+
+cmd_gh () {
+    if [ "${#}" -lt 3 ]; then
+        error "ERROR: Missing arguments."
+        echo
+        echo "Usage: $(basename "${0}") gh <PROJECT> <VERSION> <FILENAME>"
+        exit 2
+    fi
+
+    if ! command -v curl >/dev/null; then
+        fail "Missing curl."
+    fi
+
+    proj="${1}"
+    version="${2}"
+    file="${3}"
+    shift 3
+
+    task "Installing ${proj}"                                                  \
+         gh_install                                                            \
+         "https://github.com/${proj}/releases/download/${version}/${file}"     \
+         "${@}"
+}
+
+################################################################################
+
+main () {
+    cmd="${1:-}"
+    shift
+
+    case "${cmd:-}" in
+        pk|gh) "cmd_${cmd}" "${@}"                                            ;;
+        '')    fail "Missing command"                                         ;;
+        *)     fail "Unknown command '${cmd}"                                 ;;
+    esac
+
+}
+
+main "${@}"; exit

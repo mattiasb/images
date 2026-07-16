@@ -24,4 +24,4 @@ fi
 URL="${X_AUTHELIA_HEALTHCHECK_SCHEME}://${X_AUTHELIA_HEALTHCHECK_HOST}"
 URL="${URL}:${X_AUTHELIA_HEALTHCHECK_PORT}/api/health"
 
-exec wget --quiet --no-check-certificate --tries=1 --spider "${URL}"
+exec curl --show-error --silent --fail "${URL}"
