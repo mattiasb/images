@@ -6,12 +6,17 @@
 set -eu
 
 logjq () {
+    case "${X_CADDY_LOG_JQ_DEBUG:-0}" in
+        1|true) LOG_JQ_DEBUG='tee /dev/stderr'                                ;;
+        *)      LOG_JQ_DEBUG='cat'                                            ;;
+    esac
+
     LOG_JQ=/usr/local/share/caddy/log.jq
     if [ -f /etc/caddy/log.jq ]; then
         LOG_JQ=/etc/caddy/log.jq
     fi
 
-    ( trap '' INT; jq -rf "${LOG_JQ}" )
+    ( trap '' INT; ${LOG_JQ_DEBUG} | jq -rf "${LOG_JQ}" )
 }
 
 ################################################################################
