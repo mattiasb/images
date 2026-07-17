@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+set -euo pipefail
+
+cd "${0%/*}"
+
+################################################################################
+
+function section {
+    cat <<EOM
+
+########################################################################
+
+EOM
+}
+
+
+function usage {
+    cat <<EOM
+Usage: $(basename "${0}") [-h | --help]
+
+  -h, --help         Show this help message.
+  -b, --build        Build image.
+  -j, --log-jq       Enable JQ filtered logging.
+  -d, --log-debug    Enable log debugging.
+
+EOM
+}
+
+function main {
+    local o name opts long
+    local log_jq log_debug
+
+    name="$(basename "${0}")"
+    opts="hjdb"
+    long="help,build,log-jq,log-debug"
+    o="$(getopt -o "${opts}" -l "${long}" -n "${name}" -- "${@}")"
+    eval set -- "${o}"
+
+    log_jq=0
+    log_debug=0
+    build=0
+    while true; do
+        case "${1}" in
+            -h | --help)    usage       ; exit  ;;
+
+            -j|--log-jq)    log_jq=1    ; shift ;;
+            -d|--log-debug) log_debug=1 ; shift ;;
+            -b|--build)     build=1     ; shift ;;
+
+            -- ) shift; break ;;
+            * ) break ;;
+        esac
+    done
+
+    if [ "${build}" = "1" ]; then
+        section
+        ../Containerfile
+    fi
+
+    section
+    podman run --rm -it                                                        \
+           --read-only                                                         \
+           --env X_CADDY_LOG_JQ="${log_jq}"                                    \
+           --env X_CADDY_LOG_DEBUG="${log_debug}"                              \
+           --publish 127.0.0.1:9091:9091                                       \
+           --volume ./Caddyfile:/etc/caddy/Caddyfile:ro                        \
+           localhost/caddy:latest "${@}"
+}
+
+main "${@}"; exit
