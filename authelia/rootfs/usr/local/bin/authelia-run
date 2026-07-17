@@ -19,4 +19,7 @@ else
     LOG_JQ=/usr/local/share/authelia/log.jq
 fi
 
+# Forcibly set log.format to text (logfmt) since we fail otherwise.
+export AUTHELIA_LOG_FORMAT=text
+
 exec authelia 2>&1 | ${LOG_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"
