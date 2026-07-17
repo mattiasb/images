@@ -1,5 +1,8 @@
 #!/bin/env -S podman build -t localhost/caddy:latest -f
 
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 ARG VERSION
 
 FROM docker.io/library/caddy:${VERSION:+${VERSION}-}builder AS builder

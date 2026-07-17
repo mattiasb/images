@@ -1,5 +1,8 @@
 #!/bin/ash
 
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 set -eu
 
 case "${1:-}" in
