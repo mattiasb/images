@@ -1,0 +1,12 @@
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: CC-BY-SA-4.0
+
+# $schema:https://www.authelia.com/schemas/latest/json-schema/user-database.json
+---
+users:
+  # admin:admin
+  admin:
+    disabled: false
+    displayname: Admin Adminsson
+    password: "$argon2id$v=19$m=65536,t=3,p=4$Q0eCh2wNPDNx4cWIJpRy4Q$8olEAprsdT\
+      0gwIiZzixH6FjrzP9j3qaR3iGgeyGnVFo"

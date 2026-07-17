@@ -1,0 +1,61 @@
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: CC-BY-SA-4.0
+---
+# $schema:https://www.authelia.com/schemas/latest/json-schema/configuration.json
+theme: auto
+
+identity_validation:
+  reset_password:
+    jwt_secret: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+server:
+  # The default health check conflicts with running authelia as a read-only
+  # container.
+  disable_healthcheck: true
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: ForwardAuth
+
+log:
+  format: text
+  level: debug
+
+authentication_backend:
+  file:
+    path: /etc/authelia/users.yml
+
+access_control:
+  default_policy: deny
+  rules:
+    - policy: one_factor
+      domain:
+        - app.example.com
+
+session:
+  name: authelia-session
+  expiration: 900  # 15 minutes
+  inactivity: 300  #  5 minutes
+  secret: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  cookies:
+    - domain: example.com
+      authelia_url: https://auth.example.com
+      default_redirection_url: https://app.example.com
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+storage:
+  encryption_key: AAAAAAAAAAAAAAAAAAAA
+  local:
+    path: /data/authelia/db.sqlite3
+
+webauthn:
+  disable: true
+
+notifier:
+  disable_startup_check: false
+  filesystem:
+    filename: /data/authelia/notification.txt
