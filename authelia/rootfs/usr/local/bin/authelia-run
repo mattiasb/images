@@ -7,6 +7,11 @@ if [ "${X_AUTHELIA_LOG_JQ:-0}" = "0" ]; then
     exec authelia
 fi
 
+if [ "${X_AUTHELIA_LOG_DEBUG:-0}" = "0" ]; then
+    LOG_DEBUG='cat'
+else
+    LOG_DEBUG='tee /dev/stderr'
+fi
 
 if [ -f /etc/authelia/log.jq ]; then
     LOG_JQ=/etc/authelia/log.jq
@@ -14,4 +19,4 @@ else
     LOG_JQ=/usr/local/share/authelia/log.jq
 fi
 
-exec authelia 2>&1 | logfmt2json | jq -rf "${LOG_JQ}"
+exec authelia 2>&1 | ${LOG_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"
