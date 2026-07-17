@@ -30,6 +30,9 @@ COPY rootfs/ /
 
 COPY --from=build /usr/local/bin/* /usr/local/bin/
 
+# Support read-only containers
+VOLUME /data/authelia
+
 EXPOSE 9091
 
 ENTRYPOINT ["authelia-entrypoint"]

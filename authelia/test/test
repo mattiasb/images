@@ -67,7 +67,6 @@ function main {
            --env X_AUTHELIA_LOG_JQ="${log_jq}"                                 \
            --env X_AUTHELIA_LOG_DEBUG="${log_debug}"                           \
            --publish 127.0.0.1:9091:9091                                       \
-           --volume /data/authelia                                             \
            --volume ./configuration.yml:/etc/authelia/configuration.yml:ro     \
            --volume ./users.yml:/etc/authelia/users.yml:ro                     \
            localhost/authelia:latest "${@}"
