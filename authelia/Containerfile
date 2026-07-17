@@ -20,22 +20,21 @@ EOF
 
 FROM docker.io/library/alpine:3.23.5
 
-ENV X_AUTHELIA_CONFIG="/etc/authelia/configuration.yml"
-ENV X_AUTHELIA_LOG_JQ=0
-ENV X_AUTHELIA_LOG_JQ_DEBUG=0
-
 RUN --mount=source=do-install,target=/usr/local/bin/do-install do-install pk jq
 
-COPY rootfs/ /
-
 COPY --from=build /usr/local/bin/* /usr/local/bin/
+COPY rootfs/ /
 
 # Support read-only containers
 VOLUME /data/authelia
 
 EXPOSE 9091
 
-ENTRYPOINT ["authelia-entrypoint"]
-CMD ["authelia-run"]
+ENV X_AUTHELIA_CONFIG="/etc/authelia/configuration.yml"
+ENV X_AUTHELIA_LOG_JQ=0
+ENV X_AUTHELIA_LOG_JQ_DEBUG=0
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=1m CMD authelia-health
+
+ENTRYPOINT [ "authelia-entrypoint" ]
+CMD        [ "authelia-run" ]
