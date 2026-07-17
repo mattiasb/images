@@ -1,23 +1,25 @@
-#!/bin/sh
+#!/bin/ash
 
 # Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-only
 
 # From: https://github.com/authelia/authelia/blob/fef15f6b8adb/healthcheck.sh
 
+set -eu
+
 if [ "${X_AUTHELIA_HEALTHCHECK:-0}" = "0" ]; then
   exit 0
 fi
 
-if [ -z "${X_AUTHELIA_HEALTHCHECK_SCHEME}" ]; then
+if [ -z "${X_AUTHELIA_HEALTHCHECK_SCHEME:-}" ]; then
   X_AUTHELIA_HEALTHCHECK_SCHEME=http
 fi
 
-if [ -z "${X_AUTHELIA_HEALTHCHECK_HOST}" ]; then
+if [ -z "${X_AUTHELIA_HEALTHCHECK_HOST:-}" ]; then
   X_AUTHELIA_HEALTHCHECK_HOST=localhost
 fi
 
-if [ -z "${X_AUTHELIA_HEALTHCHECK_PORT}" ]; then
+if [ -z "${X_AUTHELIA_HEALTHCHECK_PORT:-}" ]; then
   X_AUTHELIA_HEALTHCHECK_PORT=9091
 fi
 
