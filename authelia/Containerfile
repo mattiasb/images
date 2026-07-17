@@ -22,7 +22,7 @@ FROM docker.io/library/alpine:3.23.5
 
 ENV X_AUTHELIA_CONFIG="/etc/authelia/configuration.yml"
 ENV X_AUTHELIA_LOG_JQ=0
-ENV X_AUTHELIA_LOG_DEBUG=0
+ENV X_AUTHELIA_LOG_JQ_DEBUG=0
 
 RUN --mount=source=do-install,target=/usr/local/bin/do-install do-install pk jq
 

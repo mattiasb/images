@@ -5,9 +5,9 @@
 
 set -eu
 
-case "${X_AUTHELIA_LOG_DEBUG:-0}" in
-    1|true) LOG_DEBUG='tee /dev/stderr'                                       ;;
-    *)      LOG_DEBUG='cat'                                                   ;;
+case "${X_AUTHELIA_LOG_JQ_DEBUG:-0}" in
+    1|true) LOG_JQ_DEBUG='tee /dev/stderr'                                    ;;
+    *)      LOG_JQ_DEBUG='cat'                                                ;;
 esac
 
 LOG_JQ=/usr/local/share/authelia/log.jq
@@ -19,6 +19,6 @@ case "${X_AUTHELIA_LOG_JQ:-0}" in
     1|true)
         # Force log.format="text" (i.e. logfmt) since "json" will fail here.
         export AUTHELIA_LOG_FORMAT=text
-        exec authelia | ${LOG_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"       ;;
+        exec authelia | ${LOG_JQ_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"    ;;
     *)  exec authelia                                                         ;;
 esac
