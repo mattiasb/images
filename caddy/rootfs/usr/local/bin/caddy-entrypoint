@@ -1,0 +1,19 @@
+#!/bin/ash
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+set -eu
+
+if [ -n "${X_CADDY_UMASK}" ]; then
+    umask "${X_CADDY_UMASK}"
+fi
+
+cmd="${1:-}"
+case "${cmd}" in
+    ''|-*)      cmd="/usr/local/bin/caddy-run"                                ;;
+    run|reload) cmd="/usr/local/bin/caddy-${cmd}"; shift                      ;;
+    *)          shift                                                         ;;
+esac
+
+exec "${cmd}" "${@}"

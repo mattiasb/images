@@ -27,8 +27,10 @@ COPY rootfs/ /
 VOLUME /data
 VOLUME /config
 
+ENV X_CADDY_UMASK=
 ENV X_CADDY_LOG_JQ=0
 ENV X_CADDY_CONFIG=/etc/caddy/Caddyfile
 ENV X_CADDY_CONFIG_ADAPTER=caddyfile
 
-CMD [ "/usr/local/bin/caddy-run" ]
+ENTRYPOINT [ "caddy-entrypoint" ]
+CMD        [ "run" ]
