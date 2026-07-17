@@ -5,20 +5,26 @@
 
 set -eu
 
-case "${X_AUTHELIA_LOG_JQ_DEBUG:-0}" in
-    1|true) LOG_JQ_DEBUG='tee /dev/stderr'                                    ;;
-    *)      LOG_JQ_DEBUG='cat'                                                ;;
-esac
+logjq () {
+    case "${X_AUTHELIA_LOG_JQ_DEBUG:-0}" in
+        1|true) LOG_JQ_DEBUG='tee /dev/stderr'                                ;;
+        *)      LOG_JQ_DEBUG='cat'                                            ;;
+    esac
 
-LOG_JQ=/usr/local/share/authelia/log.jq
-if [ -f /etc/authelia/log.jq ]; then
-    LOG_JQ=/etc/authelia/log.jq
-fi
+    LOG_JQ=/usr/local/share/authelia/log.jq
+    if [ -f /etc/authelia/log.jq ]; then
+        LOG_JQ=/etc/authelia/log.jq
+    fi
+
+    ( trap '' INT; ${LOG_JQ_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}" )
+}
+
+################################################################################
 
 case "${X_AUTHELIA_LOG_JQ:-0}" in
     1|true)
         # Force log.format="text" (i.e. logfmt) since "json" will fail here.
         export AUTHELIA_LOG_FORMAT=text
-        exec authelia | ${LOG_JQ_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"    ;;
+        exec authelia | logjq                                                 ;;
     *)  exec authelia                                                         ;;
 esac
