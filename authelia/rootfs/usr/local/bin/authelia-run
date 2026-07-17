@@ -3,23 +3,20 @@
 # Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-only
 
-if [ "${X_AUTHELIA_LOG_JQ:-0}" = "0" ]; then
-    exec authelia
-fi
+case "${X_AUTHELIA_LOG_DEBUG:-0}" in
+    1|true) LOG_DEBUG='tee /dev/stderr'                                       ;;
+    *)      LOG_DEBUG='cat'                                                   ;;
+esac
 
-if [ "${X_AUTHELIA_LOG_DEBUG:-0}" = "0" ]; then
-    LOG_DEBUG='cat'
-else
-    LOG_DEBUG='tee /dev/stderr'
-fi
-
+LOG_JQ=/usr/local/share/authelia/log.jq
 if [ -f /etc/authelia/log.jq ]; then
     LOG_JQ=/etc/authelia/log.jq
-else
-    LOG_JQ=/usr/local/share/authelia/log.jq
 fi
 
-# Forcibly set log.format to text (logfmt) since we fail otherwise.
-export AUTHELIA_LOG_FORMAT=text
-
-exec authelia 2>&1 | ${LOG_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"
+case "${X_AUTHELIA_LOG_JQ:-0}" in
+    1|true)
+        # Force log.format="text" (i.e. logfmt) since "json" will fail here.
+        export AUTHELIA_LOG_FORMAT=text
+        exec authelia | ${LOG_DEBUG} | logfmt2json | jq -rf "${LOG_JQ}"       ;;
+    *)  exec authelia                                                         ;;
+esac

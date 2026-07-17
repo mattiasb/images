@@ -31,4 +31,4 @@ ENV X_CADDY_LOG_JQ=0
 ENV X_CADDY_CONFIG=/etc/caddy/Caddyfile
 ENV X_CADDY_CONFIG_ADAPTER=caddyfile
 
-CMD [ "/usr/local/bin/caddy.sh" ]
+CMD [ "/usr/local/bin/caddy-run" ]

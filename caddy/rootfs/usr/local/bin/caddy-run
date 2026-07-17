@@ -1,0 +1,20 @@
+#!/bin/ash
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+set -eu
+
+set -- run "${@}"                                                              \
+    ${X_CADDY_CONFIG:+--config="${X_CADDY_CONFIG}"}                            \
+    ${X_CADDY_CONFIG_ADAPTER:+--adapter="${X_CADDY_CONFIG_ADAPTER}"}
+
+LOG_JQ=/usr/local/share/caddy/log.jq
+if [ -f /etc/caddy/log.jq ]; then
+    LOG_JQ=/etc/caddy/log.jq
+fi
+
+case "${X_CADDY_LOG_JQ:-0}" in
+    1|true) exec /usr/bin/caddy "${@}" | jq -rf "${LOG_JQ}"                   ;;
+    *)      exec /usr/bin/caddy "${@}"                                        ;;
+esac
