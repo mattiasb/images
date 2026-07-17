@@ -8,11 +8,14 @@ FROM docker.io/library/alpine:3.23.5 as build
 ARG VERSION=4.39.20
 ARG FILE=authelia-v${VERSION}-linux-amd64-musl.tar.gz
 
+ARG LOGFMT2JSON_GITSHA=9f00c23f68d8
+
 RUN --mount=source=do-install,target=/usr/local/bin/do-install <<EOF
     set -eu
 
-    do-install pk curl
+    do-install pk curl go
     do-install gh authelia/authelia v${VERSION} ${FILE} authelia
+    do-install go github.com/mircodz/logfmt2json@${LOGFMT2JSON_GITSHA}
 EOF
 
 FROM docker.io/library/alpine:3.23.5

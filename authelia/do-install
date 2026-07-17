@@ -5,6 +5,8 @@
 
 set -eu
 
+export GOBIN=/usr/local/bin
+
 ################################################################################
 ## Helpers
 
@@ -48,6 +50,22 @@ cmd_pk () {
 }
 
 ################################################################################
+## GO
+
+cmd_go () {
+    if [ "${#}" -lt 1 ]; then
+        error "ERROR: Missing arguments."
+        echo
+        echo "Usage: $(basename "${0}") go [PKG]..."
+        exit 2
+    fi
+
+    for pkg in "${@}"; do
+        task "Installing ${pkg}" go install "${pkg}"
+    done
+}
+
+################################################################################
 ## GitHub
 
 gh_install () {
@@ -87,9 +105,9 @@ main () {
     shift
 
     case "${cmd:-}" in
-        pk|gh) "cmd_${cmd}" "${@}"                                            ;;
-        '')    fail "Missing command"                                         ;;
-        *)     fail "Unknown command '${cmd}"                                 ;;
+        pk|gh|go) "cmd_${cmd}" "${@}"                                         ;;
+        '')       fail "Missing command"                                      ;;
+        *)        fail "Unknown command '${cmd}"                              ;;
     esac
 
 }
