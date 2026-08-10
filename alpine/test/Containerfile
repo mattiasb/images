@@ -1,0 +1,15 @@
+#!/bin/env -S podman build --build-arg CERT_INSTALL_DOMAIN='home.vm.internal' -t localhost/alpine-test -f
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+ARG CERT_INSTALL_DOMAIN
+
+FROM localhost/alpine
+
+RUN apk add --no-cache curl
+
+CMD if curl -fsSL "${CERT_INSTALL_DOMAIN}" -o /dev/null                      ; \
+    then echo "${CERT_INSTALL_DOMAIN}: OK"                                   ; \
+    else echo "${CERT_INSTALL_DOMAIN}: FAIL"                                 ; \
+    fi

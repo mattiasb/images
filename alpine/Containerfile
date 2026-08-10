@@ -1,0 +1,19 @@
+#!/bin/env -S podman build --build-arg VERSION=3.24 -t localhost/alpine -f
+
+# Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+ARG VERSION
+
+FROM docker.io/library/alpine:${VERSION}
+
+COPY rootfs/ /
+
+RUN apk add --no-cache ca-certificates                                      && \
+    rm -rf /media/*
+
+ONBUILD ARG CERT_INSTALL_DOMAIN
+ONBUILD ENV CERT_INSTALL_DOMAIN=${CERT_INSTALL_DOMAIN:-}
+ONBUILD RUN apk add --no-cache openssl                                      && \
+            cert-install                                                    && \
+            apk del --purge openssl

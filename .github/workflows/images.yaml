@@ -9,12 +9,44 @@ name: Images
 
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  ALPINE_VERSION: 3.24
   CADDY_VERSION: 2.11.4
   AUTHELIA_VERSION: 4.39.20
   REGISTRY_USER: ${{ github.actor }}
   REGISTRY_PASSWORD: ${{ github.token }}
 
 jobs:
+  alpine:
+    name: Alpine
+    runs-on: ubuntu-26.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: alpine
+          context: alpine
+          containerfiles: alpine/Containerfile
+          build-args: VERSION=${{ env.ALPINE_VERSION }}
+          tags: latest git-${{ github.sha }} ${{ env.ALPINE_VERSION }}
+
+      - name: Push image
+        id: push
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          extra-args: --disable-content-trust
+
+      - name: Print Image URL
+        run: echo "Pushed to ${{ steps.push.outputs.registry-paths }}"
+
   caddy:
     name: Caddy
     runs-on: ubuntu-26.04
