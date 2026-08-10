@@ -13,7 +13,4 @@ RUN apk add --no-cache ca-certificates                                      && \
     rm -rf /media/*
 
 ONBUILD ARG CERT_INSTALL_DOMAIN
-ONBUILD ENV CERT_INSTALL_DOMAIN=${CERT_INSTALL_DOMAIN:-}
-ONBUILD RUN apk add --no-cache openssl                                      && \
-            cert-install                                                    && \
-            apk del --purge openssl
+ONBUILD RUN cert-install "${CERT_INSTALL_DOMAIN}"

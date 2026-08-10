@@ -1,51 +1,24 @@
 #!/bin/ash
 
-set -eux
-
-: "${CERT_INSTALL_DOMAIN:=}"
+set -eu
 
 ################################################################################
-
-error () {
-    echo "ERROR: ${*}" >/dev/stderr
-}
-
-fail () {
-    error "${*}"
-    echo
-    usage
-    return 2
-}
-
-################################################################################
-
-usage () {
-    cat <<EOM
-Usage: $(basename "${0}") <FQDN> [NAME]
-
-Install the lowest cert in the chain from a host.
-EOM
-}
 
 main () {
-    domain="${1:-${CERT_INSTALL_DOMAIN:-}}"
-    name="${2:-${domain#*.}}"
-
-    if [ -z "${domain}" ]; then
-        fail "Missing argument DOMAIN"
+    if [ -z "${1:-}" ]; then
+        return
     fi
 
-    if [ -z "${name}" ]; then
-        fail "Missing argument NAME"
+    domain="${1:-}"
+    cert="${domain#*.}.crt"
+
+    if ! command -v openssl; then
+        echo "o Installing OpenSSL"
+        apk add --no-cache openssl
+        remove=openssl
     fi
 
-    # echo ============
-    # openssl s_client                                                           \
-        #         -showcerts                                                         \
-        #         -servername "${domain}"                                            \
-        #         -connect "${domain}:443" 2>/dev/null </dev/null
-    # echo ============
-    # return
+    echo "o Downloading '${cert}' from https://${domain}"
     openssl s_client                                                           \
             -showcerts                                                         \
             -servername "${domain}"                                            \
@@ -53,9 +26,15 @@ main () {
         | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | {
         openssl x509 > /dev/null
         openssl x509
-    } > "/usr/local/share/ca-certificates/${name}.crt"
+    } > "/usr/local/share/ca-certificates/${cert}"
 
+    echo "o Installing ${cert}"
     update-ca-certificates
+
+    if [ "${remove}" = openssl ]; then
+        echo "o Un-installing OpenSSL"
+        apk del --purge openssl
+    fi
 }
 
 main "${@}"; exit
