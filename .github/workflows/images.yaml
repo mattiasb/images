@@ -28,6 +28,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: alpine
+          oci: false
           context: alpine
           containerfiles: alpine/Containerfile
           build-args: VERSION=${{ env.ALPINE_VERSION }}
