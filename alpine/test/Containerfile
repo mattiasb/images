@@ -3,9 +3,10 @@
 # Copyright 2026, Mattias Bengtsson <mattias.jc.bengtsson@gmail.com>
 # SPDX-License-Identifier: Apache-2.0
 
-ARG CERT_INSTALL_DOMAIN
-
 FROM localhost/alpine
+
+ARG CERT_INSTALL_DOMAIN
+ENV CERT_INSTALL_DOMAIN=${CERT_INSTALL_DOMAIN}
 
 RUN apk add --no-cache curl
 
