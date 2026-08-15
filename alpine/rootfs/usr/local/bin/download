@@ -1,0 +1,35 @@
+#!/bin/ash
+
+# Download script.
+#
+# Example usage in a Containerfile:
+#
+#   RUN --mount=type=cache,id=cool-app-curl-cache,target=/var/cache/curl <<EOF
+#       set -xeu
+#
+#       download "https://example.com/cool-app.tar.gz"
+#       tar zxvf /var/cache/curl/cool-app.tar.gz -C /cool-app/bin
+#   EOF
+#
+
+set -eu
+
+: "${CURL_CACHE_DIR:=/var/cache/curl}"
+
+main () {
+    url="${1:?Missing URL parameter}"
+    file="${2:-$(basename "${url}")}"
+
+    if [ ! -d "${CURL_CACHE_DIR}" ]; then
+        echo "No such directory: '${CURL_CACHE_DIR}'"
+        return 2
+    fi
+
+    curl -fsSL                                                                 \
+         --output       "${CURL_CACHE_DIR}/${file}"                            \
+         --etag-save    "${CURL_CACHE_DIR}/${file}.etag"                       \
+         --etag-compare "${CURL_CACHE_DIR}/${file}.etag"                       \
+         "${url}"
+}
+
+main "${@}"; exit
